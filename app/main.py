@@ -22,7 +22,7 @@ def root():
     visits = redis_client.incr("visits")
     
     return {
-      "message":"Hello from k8s",
+      "message":"Hello from GitOps!",
       "visits": visits
     }
 
