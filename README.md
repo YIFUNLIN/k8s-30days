@@ -2,15 +2,6 @@
 
 > A hands-on Kubernetes learning repository that starts from local workloads and gradually connects containerization, networking, storage, scheduling, security, GitOps, CI/CD, and troubleshooting into one end-to-end workflow.
 
-> 📸 **Argo CD Screenshot Placeholder**  
-> Replace this block with your Argo CD application screenshot after the GitOps setup is running.
->
-> Recommended file path:
-> `docs/images/argocd-overview.png`
->
-> Then replace this block with:
->
-
 ![Argo CD Application Overview](docs/images/argocd-overview.png)
 
 ---
