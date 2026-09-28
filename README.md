@@ -10,7 +10,8 @@
 >
 > Then replace this block with:
 >
-> `![Argo CD Application Overview](docs/images/argocd-overview.png)`
+
+![Argo CD Application Overview](docs/images/argocd-overview.png)
 
 ---
 
