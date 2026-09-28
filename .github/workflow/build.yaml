@@ -4,9 +4,12 @@ on:
   push:
     branches:
       - main
+    paths:
+      - "app/**"
+      - ".github/workflows/build.yaml"
 
 permissions:
-  contents: read
+  contents: write
   packages: write
 
 jobs:
@@ -17,30 +20,57 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v6
 
+      - name: Set image name
+        id: vars
+        run: |
+          OWNER=$(
+            echo "${GITHUB_REPOSITORY_OWNER}" \
+            | tr '[:upper:]' '[:lower:]'
+          )
+
+          echo "image=ghcr.io/${OWNER}/cka-api" \
+            >> "$GITHUB_OUTPUT"
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
       - name: Login to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and Push
+        uses: docker/build-push-action@v6
+        with:
+          context: ./app
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: |
+            ${{ steps.vars.outputs.image }}:${{ github.sha }}
+
+      - name: Update Kustomize Image Tag
         run: |
-          echo "${{ secrets.GITHUB_TOKEN }}" \
-          | docker login ghcr.io \
-            -u "${{ github.actor }}" \
-            --password-stdin
+          sed -i \
+            "s/newTag: .*/newTag: ${GITHUB_SHA}/" \
+            deploy/overlays/local/kustomization.yaml
 
-      - name: Build
+      - name: Commit GitOps Change
         run: |
-          OWNER=$(
-            echo "${GITHUB_REPOSITORY_OWNER}" \
-            | tr '[:upper:]' '[:lower:]'
-          )
+          git config user.name "github-actions[bot]"
+          git config user.email \
+            "41898282+github-actions[bot]@users.noreply.github.com"
 
-          docker build \
-            -t ghcr.io/${OWNER}/cka-api:${GITHUB_SHA} \
-            ./app
+          git add deploy/overlays/local/kustomization.yaml
 
-      - name: Push
-        run: |
-          OWNER=$(
-            echo "${GITHUB_REPOSITORY_OWNER}" \
-            | tr '[:upper:]' '[:lower:]'
-          )
+          git diff --cached --quiet \
+            && exit 0
 
-          docker push \
-            ghcr.io/${OWNER}/cka-api:${GITHUB_SHA}
+          git commit \
+            -m "chore: deploy ${GITHUB_SHA}"
+
+          git push

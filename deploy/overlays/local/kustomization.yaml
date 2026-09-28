@@ -7,3 +7,8 @@ resources:
 replicas:
   - name: api
     count: 1
+
+images:
+  - name: cka-api
+    newName: ghcr.io/yifunlin/cka-api
+    newTag: bootstrapi
