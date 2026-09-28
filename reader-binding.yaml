@@ -1,0 +1,16 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+
+metadata:
+  name: reader-binding
+  namespace: cka-lab
+
+subjects:
+  - kind: ServiceAccount
+    name: reader
+    namespace: cka-lab
+
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: pod-reader

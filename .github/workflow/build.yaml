@@ -1,0 +1,46 @@
+name: Build API
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Login to GHCR
+        run: |
+          echo "${{ secrets.GITHUB_TOKEN }}" \
+          | docker login ghcr.io \
+            -u "${{ github.actor }}" \
+            --password-stdin
+
+      - name: Build
+        run: |
+          OWNER=$(
+            echo "${GITHUB_REPOSITORY_OWNER}" \
+            | tr '[:upper:]' '[:lower:]'
+          )
+
+          docker build \
+            -t ghcr.io/${OWNER}/cka-api:${GITHUB_SHA} \
+            ./app
+
+      - name: Push
+        run: |
+          OWNER=$(
+            echo "${GITHUB_REPOSITORY_OWNER}" \
+            | tr '[:upper:]' '[:lower:]'
+          )
+
+          docker push \
+            ghcr.io/${OWNER}/cka-api:${GITHUB_SHA}

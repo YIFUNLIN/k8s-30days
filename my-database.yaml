@@ -1,0 +1,10 @@
+apiVersion: example.ironman/v1
+kind: Database
+
+metadata:
+  name: my-database
+  namespace: cka-lab
+
+spec:
+  engine: postgres
+  size: small
