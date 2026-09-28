@@ -11,4 +11,4 @@ replicas:
 images:
   - name: cka-api
     newName: ghcr.io/yifunlin/cka-api
-    newTag: bootstrapi
+    newTag: 8f7c13e32e9b6e62e3e85e12242a2a546641413f
