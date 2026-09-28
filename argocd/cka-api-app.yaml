@@ -1,0 +1,26 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+
+metadata:
+  name: cka-api
+  namespace: argocd
+
+spec:
+  project: default
+
+  source:
+    repoURL: https://github.com/YIFUNLIN/k8s-30days.git
+    targetRevision: main
+    path: deploy/overlays/local
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: cka-lab
+
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+
+    syncOptions:
+      - CreateNamespace=true

@@ -1,1 +1,18 @@
-etcd-restored
+# macOS
+.DS_Store
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Secrets
+.env
+
+# etcd restore data
+etcd-restored/
+
+# etcd snapshot
+backup.db
+snapshot.db
